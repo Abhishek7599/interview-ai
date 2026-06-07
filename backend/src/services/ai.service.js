@@ -120,14 +120,16 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 
 async function generatePdfFromHtml(htmlContent) {
     const browser = await puppeteer.launch({
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        timeout: 60000,
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
     });
 
     const page = await browser.newPage();
 
     await page.setContent(htmlContent, {
-        waitUntil: "networkidle0"
+        waitUntil: "networkidle0",
     });
 
     const pdfBuffer = await page.pdf({
@@ -137,15 +139,14 @@ async function generatePdfFromHtml(htmlContent) {
             top: "20mm",
             bottom: "20mm",
             left: "15mm",
-            right: "15mm"
-        }
+            right: "15mm",
+        },
     });
 
     await browser.close();
 
     return pdfBuffer;
 }
-
 async function generateResumePdf({ resume, selfDescription, jobDescription }) {
 
     const resumePdfSchema = z.object({
