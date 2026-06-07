@@ -7,20 +7,26 @@ const cors = require("cors")
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-    origin: function (origin, callback) {
-        const allowedOrigins = [
-            "http://localhost:5173",
-            "https://interview-ai-three-dusky.vercel.app"
-        ];
+const allowedOrigins = [
+  "http://localhost:5173",
+];
 
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    const isAllowed =
+      allowedOrigins.includes(origin) ||
+      origin.endsWith(".vercel.app"); // 🔥 FIX
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log("Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 }));
 
 const authrouter = require("./routes/auth.route");
