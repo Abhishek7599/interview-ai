@@ -8,13 +8,9 @@ const cors = require("cors")
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: [
-    "http://localhost:5173",
-    "https://interview-j0th3n6ih-abhishek-kumar-s-projects2602.vercel.app"
-  ],
-    credentials:true
-}))
-
+  origin: true,
+  credentials: true
+}));
 
 const authrouter = require("./routes/auth.route");
 const interviewRouter = require("./routes/interview.routes");
