@@ -117,47 +117,24 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
     }
 }
 
+const pdf = require("html-pdf-node");
+
 async function generatePdfFromHtml(htmlContent) {
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-gpu"
-        ]
-    });
+    const file = { content: htmlContent };
 
-    try {
-        const page = await browser.newPage();
+    const options = {
+        format: "A4",
+        printBackground: true,
+        margin: {
+            top: "20mm",
+            bottom: "20mm",
+            left: "15mm",
+            right: "15mm"
+        }
+    };
 
-        await page.setContent(htmlContent, {
-            waitUntil: "load",
-            timeout: 60000
-        });
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const pdfBuffer = await page.pdf({
-            format: "A4",
-            printBackground: true,
-            margin: {
-                top: "20mm",
-                bottom: "20mm",
-                left: "15mm",
-                right: "15mm",
-            },
-        });
-
-        return pdfBuffer;
-
-    } catch (err) {
-        console.error("PDF GENERATION ERROR:", err);
-        throw err;
-
-    } finally {
-        await browser.close();
-    }
+    const pdfBuffer = await pdf.generatePdf(file, options);
+    return pdfBuffer;
 }
 
 
