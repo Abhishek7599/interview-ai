@@ -87,6 +87,10 @@ async function generateResumePdfController(req, res) {
 
         const pdfBuffer = await generateResumePdf(interviewReport);
 
+if (!pdfBuffer) {
+    return res.status(500).json({ message: "PDF buffer empty" });
+}
+
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader(
             "Content-Disposition",
